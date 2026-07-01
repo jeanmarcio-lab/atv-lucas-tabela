@@ -1,0 +1,11 @@
+
+................................................................................................create table clientes (
+id bigint generated always as produto primary key not null,
+coluna1 text,
+coluna2  varchar(15),
+coluna3 int
+); 
+  --entidade geralmente se refere a tabela que vocês querem criar--)
+  --coluna1 foi colocada como texto(text) que é a premissa mais basica de escrita de coluna--
+  --coluna2 foi utilizada o varchar para mostrar como vocẽs limita a quantidade de caracteres--
+  --coluna3 se refere ao item de configuração mais basica para inserir numeros (int está associada a inteiro, ou seja, um numero INteiro)--
