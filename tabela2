@@ -1,0 +1,64 @@
+-- =========================================================================
+-- CONTROLE DE LIMPEZA (Opcional: Garante que o script rode do zero se reexecutado)
+-- =========================================================================
+DROP TABLE IF EXISTS matriculas;
+DROP TABLE IF EXISTS pedidos;
+DROP TABLE IF EXISTS perfis;
+DROP TABLE IF EXISTS alunos;
+DROP TABLE IF EXISTS cursos;
+DROP TABLE IF EXISTS usuarios;
+
+-- =========================================================================
+-- 1. MODELO 1:1 (Usuários e Perfis)
+-- =========================================================================
+
+CREATE TABLE usuarios (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(150) UNIQUE NOT NULL,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE perfis (
+    id SERIAL PRIMARY KEY,
+    usuario_id INT UNIQUE NOT NULL, -- O 'UNIQUE' aqui garante a relação 1:1
+    nome_completo VARCHAR(100) NOT NULL,
+    biografia TEXT,
+    CONSTRAINT fk_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+-- =========================================================================
+-- 2. MODELO 1:N (Usuários e Pedidos)
+-- =========================================================================
+
+CREATE TABLE pedidos (
+    id SERIAL PRIMARY KEY,
+    usuario_id INT NOT NULL, -- Sem 'UNIQUE', pois um usuário pode ter vários pedidos
+    valor_total DECIMAL(10, 2) NOT NULL,
+    data_pedido TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_usuario_pedido FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+-- =========================================================================
+-- 3. MODELO N:N (Alunos e Cursos através da tabela Matriculas)
+-- =========================================================================
+
+CREATE TABLE alunos (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE cursos (
+    id SERIAL PRIMARY KEY,
+    titulo VARCHAR(100) NOT NULL,
+    carga_horaria INT NOT NULL
+);
+
+-- Tabela Alunos e Cursos
+CREATE TABLE matriculas (
+    aluno_id INT NOT NULL,
+    curso_id INT NOT NULL,
+    data_matricula TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (aluno_id, curso_id), -- Chave primária composta impede duplicidade da mesma matrícula
+    CONSTRAINT fk_aluno FOREIGN KEY (aluno_id) REFERENCES alunos(id) ON DELETE CASCADE,
+    CONSTRAINT fk_curso FOREIGN KEY (curso_id) REFERENCES cursos(id) ON DELETE CASCADE
+);
